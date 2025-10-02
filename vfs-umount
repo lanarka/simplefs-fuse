@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ "$#" -ne 1 ]; then
+    echo "usage: $0 <mountpoint>"
+    exit 1
+fi
+
+MNT="$1"
+
+if [ ! -d "$MNT" ]; then
+    echo "mountpoint '$MNT' not exists"
+    exit 2
+fi
+
+fusermount3 -u "$MNT" 2>/dev/null || fusermount -u "$MNT" 2>/dev/null || sudo umount "$MNT"
+
+if [ -f "$MNT/.vfs.pid" ]; then
+    kill "$(cat "$MNT/.vfs.pid")" 2>/dev/null
+    rm -f "$MNT/.vfs.pid"
+fi
+
+rmdir "$MNT"
+echo "unmounted: $MNT"

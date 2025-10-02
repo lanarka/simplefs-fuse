@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ "$#" -ne 2 ]; then
+    echo "usage: $0 <image> <mountpoint>"
+    exit 1
+fi
+
+IMG="$1"
+MNT="$2"
+
+if [ ! -f "$IMG" ]; then
+    echo "File '$IMG' not exists"
+    exit 2
+fi
+
+mkdir -p "$MNT"
+
+./build/vfs "$IMG" "$MNT" &
+PID=$!
+
+echo "$PID" > "$MNT/.vfs.pid"
+
+echo "mounted: $IMG to $MNT (pid: $PID)"
